@@ -1,0 +1,225 @@
+Function isColunPassive(value)
+        
+    stringPassiveColun = "*[|]*"
+    
+        If (value Like stringPassiveColun) Then
+            isColunPassive = True
+        Else
+            isColunPassive = False
+        End If
+        
+End Function
+
+
+
+Function isColunAtive(value)
+        
+    stringAtiveColun = "*[;]*"
+    
+        If (value Like stringAtiveColun) Then
+            isColunAtive = True
+        Else
+            isColunAtive = False
+        End If
+        
+End Function
+
+Function isColunPrincipal(value)
+        
+    stringColunPrincipal = "*[p]*"
+    
+        If (value Like stringColunPrincipal) Then
+            isColunPrincipal = True
+        Else
+            isColunPrincipal = False
+        End If
+        
+End Function
+
+
+Function isColun(value)
+        
+    stringAtiveColun = "*[;]*"
+    stringPassiveColun = "*[|]*"
+    stringColunPrincipal = "*[p]*"
+    
+        If ((value Like stringAtiveColun) Or (value Like stringPassiveColun) Or (value Like stringColunPrincipal)) Then
+            isColun = True
+        Else
+            isColun = False
+        End If
+        
+End Function
+
+
+Function isRowPassive(value)
+        
+    stringPassiveRow = "*[++]*"
+    
+        If (value Like stringPassiveRow) Then
+            stringPassiveRow = True
+        Else
+            stringPassiveRow = False
+        End If
+        
+End Function
+
+
+Function isRowAtive(value)
+        
+    stringActiveRow = "*[--]*"
+    
+        If (value Like stringActiveRow) Then
+            isRowAtive = True
+        Else
+            isRowAtive = False
+        End If
+        
+End Function
+
+
+Function isRow(value)
+        
+    stringActiveRow = "*[--]*"
+    stringPassiveRow = "*[++]*"
+    
+        If ((value Like stringActiveRow) Or (value Like stringPassiveRow)) Then
+            isRow = True
+        Else
+            isRow = False
+        End If
+        
+End Function
+Function isNull(value)
+    If (value = "") Then
+        isNull = True
+    Else
+        isNull = False
+    End If
+End Function
+
+Sub PaintCell(row, colun, cor)
+    Cells(row, colun).Interior.ColorIndex = cor
+End Sub
+
+
+
+Sub CleanColor()
+    
+    
+    For row = 1 To 100
+        For colun = 1 To 100
+            If (isColun(Cells(row, colun).value)) Then
+                For row2 = (row + 1) To 100
+                    Cells(row2, colun).Interior.ColorIndex = 0
+                Next row2
+            End If
+            
+            If (isRow(Cells(row, colun).value)) Then
+                For colun2 = (colun + 1) To 100
+                    Cells(row, colun2).Interior.ColorIndex = 0
+                Next colun2
+            End If
+        Next colun
+    Next row
+    
+End Sub
+Function VerfyDate(value)
+    If (value < Now()) Then
+        VerfyDate = 1
+    Else
+        VerfyDate = 0
+    End If
+End Function
+
+Sub VerfyDates()
+
+    stringData = "??/??/????"
+    Call CleanColor
+    
+    For row = 1 To 100
+        For colun = 1 To 100
+            If (isColunPrincipal(Cells(row, colun).value)) Then
+            
+                PrincipalRow = row
+                PrincipalColun = colun
+                
+            End If
+            
+            If (isColun(Cells(row, colun).value)) Then
+                
+                For row2 = (row + 1) To 100
+                    value = Cells(row2, colun).value
+                    
+                    If (value Like stringData Or isNull(value)) Then
+                    
+                        If (VerfyDate(value) And Not isNull(Cells(row2, PrincipalColun).value)) Then
+                            
+                            cor = 3
+                            If ((isColunPassive(Cells(row, colun).value) And isNull(value))) Then
+                                Call PaintCell(row2, colun, 0)
+                            Else
+                                Call PaintCell(row2, colun, cor)
+                                Call PaintCell(row2, PrincipalColun, cor)
+                            End If
+                            
+                        End If
+                    Else
+                    End If
+                    
+                    
+                    
+                Next row2
+            End If
+        Next colun
+    Next row
+End Sub
+
+
+Sub ano()
+    For row = 3 To 100
+        For colun = 2 To 10
+            If (CStr(Cells(row, colun).value) Like "??/??/????" And (CStr(Cells(2, colun).value) Like "*[;]*" Or CStr(Cells(2, colun).value) Like "*[|]*")) Then
+                Cells(row, colun).value = DateAdd("m", 12, CStr(Cells(row, colun).value))
+                If (CStr(Cells(2, colun).value) Like "*[|]*") Then
+                    Cells(row, colun).value = DateAdd("m", 12, CStr(Cells(row, colun).value))
+                End If
+            End If
+            If ((Cells(2, colun).value Like "VALIDADE DO PPRA*" Or Cells(2, colun).value Like "VALIDADE DO PCMSO*") And CStr(Cells(row, colun).value) Like "??/??/????") Then
+                Cells(row, colun).value = DateAdd("m", 12, CStr(Cells(row, colun).value))
+            End If
+        Next colun
+    Next row
+    
+End Sub
+
+Sub a()
+    Cells(2, 1).value = "NOME DO PRESTADOR [p]"
+End Sub
+Sub enumerarTabelas()
+    Numeracao(1 To 4) As Integer
+        (1 To 4) As Integer
+    
+
+    For cont1 = 1 To 22
+        For cont2 = 1 To 22
+            If (Sheets(cont1).Name > Sheets(cont2).Name) Then
+                Sheets(cont1).Name = CStr(CStr(cont1) + " - " + Sheets(cont1).Name)
+            End If
+        Next cont2
+    Next cont1
+    
+    
+    
+End Sub
+
+Sub ageitarTabelas()
+    For cont = 1 To 10
+        If (Sheets(cont).Name > Sheets(cont + 1).Name) Then
+            Sheets(2).Move Before:=Sheets(1)
+            'MsgBox (" moveu")
+            Else
+            'MsgBox ("Nao moveu")
+        End If
+    Next cont
+End Sub
