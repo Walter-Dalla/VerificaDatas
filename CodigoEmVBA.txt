@@ -1,3 +1,12 @@
+Private Sub Workbook_Open()
+    MsgBox ("Autor: Walter Dalla Torre Neto" & vbCrLf & "Contato: wwddttnn@hotmail.com")
+    Sheets(1).Select
+    Cells(1, 1).Select
+End Sub
+Private Sub Workbook_SheetActivate(ByVal sh As Object)
+    Cells(1, 1).Select
+    
+End Sub
 Function isColunPassive(value)
         
     stringPassiveColun = "*[|]*"
@@ -195,7 +204,7 @@ End Sub
 
 Sub IniciarTabela()
 
-    For sheetNumber = 1 To 100
+    For sheetNumber = 1 To Sheets.Count
     Sheets(sheetNumber).Activate
         Cells(2, 1).value = "NOME DO PRESTADOR [p]"
         Cells(2, 2).value = "VALIDADE DA INTEGRAÇÃO [;]"
@@ -224,5 +233,56 @@ Sub IniciarTabela()
             End If
         Next col
     Next sheetNumber
+End Sub
+Function colunaToChar(col As Integer)
+
+    Dim char As Characters
     
+    colunaToChar = Chr(64 + col)
+
+End Function
+
+Sub alphabeticalOrderSheets()
+
+    Dim last As Integer
+    Dim NameSheet As String
+    
+    last = Sheets.Count
+    
+    Sheets.Add after:=Sheets(last)
+    
+    
+    For TotalSheets = 1 To last
+    
+        Sheets(last + 1).Cells(TotalSheets, 1) = Sheets(TotalSheets).Name
+    Next TotalSheets
+
+
+    With Sheets(last + 1)
+    
+        .Sort.SortFields.Clear
+        .Sort.SortFields.Add Key:=range("A1")
+        .Sort.SetRange range("A1").CurrentRegion
+        .Sort.Header = xlNo
+        .Sort.Orientation = xlTopToBottom
+        .Sort.Apply
+     
+    End With
+
+ 
+    For TotalSheets = 1 To last
+        
+        NameSheet = Sheets(last + 1).Cells(TotalSheets, 1).value
+        Sheets(NameSheet).Move before:=Sheets(TotalSheets + 1)
+        Cells(1, 1).value = Sheets(TotalSheets).Name
+        
+    Next TotalSheets
+
+    Application.DisplayAlerts = False
+     
+    Sheets(last + 1).Delete
+    
+    Application.DisplayAlerts = True
+
+
 End Sub
